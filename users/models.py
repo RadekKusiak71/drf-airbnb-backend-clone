@@ -3,6 +3,10 @@ from django.contrib.auth.models import User
 from cities_light.models import Country, City
 
 
+def get_user_media_direction(instance, filename):
+    return f'{instance}/{filename}'
+
+
 class Profile(models.Model):
     """
         Profile model is extending a User and adding additional fields
@@ -30,6 +34,8 @@ class Profile(models.Model):
     """
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    profile_image = models.ImageField(
+        upload_to=get_user_media_direction, null=True, blank=True)
     born_date = models.DateField(null=True, blank=True)
     bio = models.TextField(max_length=400, null=True, blank=True)
     work = models.CharField(max_length=40, null=True, blank=True)

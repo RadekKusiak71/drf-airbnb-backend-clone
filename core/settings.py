@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "django_filters",
     # Apps
     "users.apps.UsersConfig",
+    "listings.apps.ListingsConfig",
     "authentication.apps.AuthenticationConfig",
 
 ]
