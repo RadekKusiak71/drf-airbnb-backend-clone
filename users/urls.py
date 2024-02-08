@@ -8,5 +8,3 @@ router.register(r"profiles", UsersModelViewSet, basename="profile")
 urlpatterns = []
 
 urlpatterns += router.urls
-
-print(urlpatterns)
