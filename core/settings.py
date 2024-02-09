@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "users.apps.UsersConfig",
     "listings.apps.ListingsConfig",
     "authentication.apps.AuthenticationConfig",
+    "reservations.apps.ReservationsConfig",
 
 ]
 # Cors cofiguration
