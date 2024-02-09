@@ -34,7 +34,8 @@ class Listing(models.Model):
 
 
 class ListingImage(models.Model):
-    listing = models.ForeignKey(Listing, on_delete=models.CASCADE)
+    listing = models.ForeignKey(
+        Listing, on_delete=models.CASCADE, related_name="images")
     image = models.ImageField(upload_to=get_listing_upload_path, validators=[
                               FileExtensionValidator(['png', 'jpeg', 'jpg'])])
 
