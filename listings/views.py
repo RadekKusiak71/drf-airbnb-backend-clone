@@ -1,8 +1,8 @@
-from django.shortcuts import render
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-from .models import ListingImage, Listing
+from .models import Listing
 from .serializers import ListingSerializer
+from .utils import filter_listing_queryset
 
 
 class ListingViewSets(viewsets.ViewSet):
@@ -11,42 +11,52 @@ class ListingViewSets(viewsets.ViewSet):
         queryset = Listing.objects.all()
         queries = request.GET
         if queries:
-            queryset = self.filter_queryset(queryset, queries)
+            queryset = filter_listing_queryset(queryset, queries)
         serialized_data = ListingSerializer(queryset, many=True).data
         return Response(serialized_data, status=status.HTTP_200_OK)
 
-    def filter_queryset(self, queryset, queries):
-        if queries.get("country"):
-            queryset = queryset.filter(country__name=queries["country"])
-        if queries.get("max_price"):
-            queryset = queryset.filter(price__lte=queries["max_price"])
-        if queries.get("min_price"):
-            queryset = queryset.filter(price__gte=queries["min_price"])
-        if queries.get("toilets"):
-            queryset = queryset.filter(toilets_count__gte=queries["toilets"])
-        if queries.get("beds"):
-            queryset = queryset.filter(beds_count__gte=queries["beds"])
-        if queries.get("guests"):
-            queryset = queryset.filter(guests_count__gte=queries["guests"])
-        if queries.get("pool"):
-            queryset = queryset.filter(pool=True)
-        if queries.get("pets"):
-            queryset = queryset.filter(pets=True)
-        if queries.get("parking"):
-            queryset = queryset.filter(parking=True)
-        return queryset
-
     def create(self, request):
-        pass
+        serializer = ListingSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def retrieve(self, request, pk=None):
-        pass
+        queryset = Listing.objects.get(id=pk)
+        if queryset:
+            serialized_data = ListingSerializer(queryset, many=False).data
+            return Response(serialized_data, status=status.HTTP_200_OK)
+        else:
+            return Response({"details": "Listing not found"}, status=status.HTTP_404_NOT_FOUND)
 
     def update(self, request, pk=None):
-        pass
+        queryset = Listing.objects.get(id=pk)
+        data = request.data
+        if queryset:
+            serializer = ListingSerializer(queryset, data=data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response({"details": "Listing not found"})
 
     def partial_update(self, request, pk=None):
-        pass
+        queryset = Listing.objects.get(id=pk)
+        data = request.data
+        if queryset:
+            serializer = ListingSerializer(queryset, data=data, partial=True)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response({"details": "Listing not found"})
 
     def destroy(self, request, pk=None):
-        pass
+        queryset = Listing.objects.get(id=pk)
+        if queryset:
+            queryset.delete()
+            return Response({"details": "Listing deleted"}, status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response({"details": "Listing not found"}, status=status.HTTP_404_NOT_FOUND)
