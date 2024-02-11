@@ -3,9 +3,11 @@ from rest_framework.response import Response
 from .models import Listing
 from .serializers import ListingSerializer
 from .utils import filter_listing_queryset
+from rest_framework.authentication import TokenAuthentication
 
 
 class ListingViewSets(viewsets.ViewSet):
+    authentication_classes = [TokenAuthentication]
 
     def list(self, request):
         queryset = Listing.objects.all()
@@ -16,6 +18,9 @@ class ListingViewSets(viewsets.ViewSet):
         return Response(serialized_data, status=status.HTTP_200_OK)
 
     def create(self, request):
+        if not request.user.is_authenticated:
+            return Response({"detail": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
+
         serializer = ListingSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -32,6 +37,9 @@ class ListingViewSets(viewsets.ViewSet):
             return Response({"details": "Listing not found"}, status=status.HTTP_404_NOT_FOUND)
 
     def update(self, request, pk=None):
+        if not request.user.is_authenticated:
+            return Response({"detail": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
+
         queryset = Listing.objects.get(id=pk)
         data = request.data
         if queryset:
@@ -43,6 +51,9 @@ class ListingViewSets(viewsets.ViewSet):
             return Response({"details": "Listing not found"})
 
     def partial_update(self, request, pk=None):
+        if not request.user.is_authenticated:
+            return Response({"detail": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
+
         queryset = Listing.objects.get(id=pk)
         data = request.data
         if queryset:
@@ -54,6 +65,9 @@ class ListingViewSets(viewsets.ViewSet):
             return Response({"details": "Listing not found"})
 
     def destroy(self, request, pk=None):
+        if not request.user.is_authenticated:
+            return Response({"detail": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
+
         queryset = Listing.objects.get(id=pk)
         if queryset:
             queryset.delete()

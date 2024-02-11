@@ -2,9 +2,11 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 from .serializers import ReservationSerializer
 from .models import Reservation
+from rest_framework.authentication import TokenAuthentication
 
 
 class ReservationsViewSets(viewsets.ViewSet):
+    authentication_classes = [TokenAuthentication]
 
     def list(self, request):
         queryset = Reservation.objects.all()
@@ -12,6 +14,9 @@ class ReservationsViewSets(viewsets.ViewSet):
         return Response(serialized_data, status=status.HTTP_200_OK)
 
     def create(self, request):
+        if not request.user.is_authenticated:
+            return Response({"detail": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
+
         serializer = ReservationSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -28,6 +33,9 @@ class ReservationsViewSets(viewsets.ViewSet):
             return Response({"details": "Reservation not found"}, status=status.HTTP_404_NOT_FOUND)
 
     def update(self, request, pk=None):
+        if not request.user.is_authenticated:
+            return Response({"detail": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
+
         queryset = Reservation.objects.get(id=pk)
         data = request.data
         if queryset:
@@ -39,6 +47,9 @@ class ReservationsViewSets(viewsets.ViewSet):
             return Response({"details": "Reservation not found"})
 
     def partial_update(self, request, pk=None):
+        if not request.user.is_authenticated:
+            return Response({"detail": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
+
         queryset = Reservation.objects.get(id=pk)
         data = request.data
         if queryset:
@@ -51,6 +62,9 @@ class ReservationsViewSets(viewsets.ViewSet):
             return Response({"details": "Reservation not found"})
 
     def destroy(self, request, pk=None):
+        if not request.user.is_authenticated:
+            return Response({"detail": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
+
         queryset = Reservation.objects.get(id=pk)
         if queryset:
             queryset.delete()

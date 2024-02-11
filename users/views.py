@@ -2,9 +2,11 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 from .models import Profile
 from .serializers import ProfileSerializer, ProfileUpdateSerializer
+from rest_framework.authentication import TokenAuthentication
 
 
 class UsersModelViewSet(viewsets.ViewSet):
+    authentication_classes = [TokenAuthentication]
 
     def list(self, request):
         queryset = Profile.objects.all()
@@ -28,6 +30,9 @@ class UsersModelViewSet(viewsets.ViewSet):
             return Response({"details": "Profile not found"}, status=status.HTTP_404_NOT_FOUND)
 
     def update(self, request, pk=None):
+        if not request.user.is_authenticated:
+            return Response({"detail": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
+
         queryset = Profile.objects.get(id=pk)
         data = request.data
         if queryset:
@@ -39,6 +44,9 @@ class UsersModelViewSet(viewsets.ViewSet):
             return Response({"details": "Profile not found"}, status=status.HTTP_404_NOT_FOUND)
 
     def partial_update(self, request, pk=None):
+        if not request.user.is_authenticated:
+            return Response({"detail": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
+
         queryset = Profile.objects.get(id=pk)
         data = request.data
         if queryset:
@@ -51,6 +59,9 @@ class UsersModelViewSet(viewsets.ViewSet):
             return Response({"details": "Profile not found"}, status=status.HTTP_404_NOT_FOUND)
 
     def destroy(self, request, pk=None):
+        if not request.user.is_authenticated:
+            return Response({"detail": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
+
         queryset = Profile.objects.get(id=pk)
         if queryset:
             queryset.delete()
