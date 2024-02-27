@@ -15,6 +15,9 @@ class Review(models.Model):
     profile = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True)
     reservation = models.ForeignKey(Reservation, on_delete=models.CASCADE)
     description = models.CharField(max_length=360)
-    rate = models.PositiveIntegerField(default=3, choices=RATE_CHOICES, validators=[
-                                       MinValueValidator(1), MaxValueValidator(5)])
+    rate = models.PositiveIntegerField(
+        default=3,
+        choices=RATE_CHOICES,
+        validators=[MinValueValidator(1), MaxValueValidator(5)],
+    )
     created_at = models.DateTimeField(auto_now_add=True)

@@ -15,7 +15,10 @@ class ReservationsViewSets(viewsets.ViewSet):
 
     def create(self, request):
         if not request.user.is_authenticated:
-            return Response({"detail": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response(
+                {"detail": "Authentication credentials were not provided."},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
 
         serializer = ReservationSerializer(data=request.data)
         if serializer.is_valid():
@@ -30,11 +33,16 @@ class ReservationsViewSets(viewsets.ViewSet):
             serialized_data = ReservationSerializer(queryset, many=False).data
             return Response(serialized_data, status=status.HTTP_200_OK)
         else:
-            return Response({"details": "Reservation not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"details": "Reservation not found"}, status=status.HTTP_404_NOT_FOUND
+            )
 
     def update(self, request, pk=None):
         if not request.user.is_authenticated:
-            return Response({"detail": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response(
+                {"detail": "Authentication credentials were not provided."},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
 
         queryset = Reservation.objects.get(id=pk)
         data = request.data
@@ -48,7 +56,10 @@ class ReservationsViewSets(viewsets.ViewSet):
 
     def partial_update(self, request, pk=None):
         if not request.user.is_authenticated:
-            return Response({"detail": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response(
+                {"detail": "Authentication credentials were not provided."},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
 
         queryset = Reservation.objects.get(id=pk)
         data = request.data
@@ -63,11 +74,18 @@ class ReservationsViewSets(viewsets.ViewSet):
 
     def destroy(self, request, pk=None):
         if not request.user.is_authenticated:
-            return Response({"detail": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response(
+                {"detail": "Authentication credentials were not provided."},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
 
         queryset = Reservation.objects.get(id=pk)
         if queryset:
             queryset.delete()
-            return Response({"details": "Reservation deleted"}, status=status.HTTP_204_NO_CONTENT)
+            return Response(
+                {"details": "Reservation deleted"}, status=status.HTTP_204_NO_CONTENT
+            )
         else:
-            return Response({"details": "Reservation not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"details": "Reservation not found"}, status=status.HTTP_404_NOT_FOUND
+            )

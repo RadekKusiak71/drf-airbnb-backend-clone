@@ -51,7 +51,6 @@ INSTALLED_APPS = [
     "authentication.apps.AuthenticationConfig",
     "reservations.apps.ReservationsConfig",
     "reviews.apps.ReviewsConfig",
-
 ]
 # Cors cofiguration
 CORS_ALLOW_ALL_ORIGINS = True

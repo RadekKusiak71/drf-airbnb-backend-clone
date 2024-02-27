@@ -7,6 +7,7 @@ django-filter==23.5
 django-phonenumber-field==7.3.0
 djangorestframework==3.14.0
 phonenumbers==8.13.29
+pillow==10.2.0
 progressbar2==4.3.2
 python-dotenv==1.0.1
 python-utils==3.8.2
