@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from .serializers import ReviewSerializer
 from .models import Review
 from rest_framework.authentication import TokenAuthentication
+from django.shortcuts import get_object_or_404
 
 
 class ReviewViewSet(viewsets.ViewSet):
@@ -28,7 +29,7 @@ class ReviewViewSet(viewsets.ViewSet):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def retrieve(self, request, pk=None):
-        review = Review.objects.get(id=pk)
+        review = Review.objects.get_object_or_404(id=pk)
         if review:
             serialized_data = ReviewSerializer(review, many=False).data
             return Response(serialized_data, status=status.HTTP_200_OK)
@@ -39,7 +40,7 @@ class ReviewViewSet(viewsets.ViewSet):
         if not request.user.is_authenticated:
             return Response({"detail": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
 
-        review = Review.objects.get(id=pk)
+        review = Review.objects.get_object_or_404(id=pk)
         data = request.data
         if review:
             serializer = ReviewSerializer(review, data=data)
@@ -53,7 +54,7 @@ class ReviewViewSet(viewsets.ViewSet):
         if not request.user.is_authenticated:
             return Response({"detail": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
 
-        review = Review.objects.get(id=pk)
+        review = Review.objects.get_object_or_404(id=pk)
         data = request.data
         if review:
             serializer = ReviewSerializer(
@@ -67,7 +68,7 @@ class ReviewViewSet(viewsets.ViewSet):
     def destroy(self, request, pk=None):
         if not request.user.is_authenticated:
             return Response({"detail": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
-        review = Review.objects.get(id=pk)
+        review = Review.objects.get_object_or_404(id=pk)
         if request.user != review.review.user:
             return Response({"detail": "This review doesn\'t belong to this user."}, status=status.HTTP_401_UNAUTHORIZED)
         if review:

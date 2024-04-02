@@ -4,6 +4,7 @@ from .models import Listing
 from .serializers import ListingSerializer
 from .utils import filter_listing_queryset
 from rest_framework.authentication import TokenAuthentication
+from django.shortcuts import get_object_or_404
 
 
 class ListingViewSets(viewsets.ViewSet):
@@ -29,7 +30,7 @@ class ListingViewSets(viewsets.ViewSet):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def retrieve(self, request, pk=None):
-        listing = Listing.objects.get(id=pk)
+        listing = Listing.objects.get_object_or_404(id=pk)
         if listing:
             serialized_data = ListingSerializer(listing, many=False).data
             return Response(serialized_data, status=status.HTTP_200_OK)
@@ -40,7 +41,7 @@ class ListingViewSets(viewsets.ViewSet):
         if not request.user.is_authenticated:
             return Response({"detail": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
 
-        listing = Listing.objects.get(id=pk)
+        listing = Listing.objects.get_object_or_404(id=pk)
         data = request.data
         if listing:
             serializer = ListingSerializer(listing, data=data)
@@ -54,7 +55,7 @@ class ListingViewSets(viewsets.ViewSet):
         if not request.user.is_authenticated:
             return Response({"detail": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
 
-        listing = Listing.objects.get(id=pk)
+        listing = Listing.objects.get_object_or_404(id=pk)
         data = request.data
         if listing:
             serializer = ListingSerializer(listing, data=data, partial=True)
@@ -68,7 +69,7 @@ class ListingViewSets(viewsets.ViewSet):
         if not request.user.is_authenticated:
             return Response({"detail": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
 
-        listing = Listing.objects.get(id=pk)
+        listing = Listing.objects.get_object_or_404(id=pk)
         if listing:
             listing.delete()
             return Response({"details": "Listing deleted"}, status=status.HTTP_204_NO_CONTENT)

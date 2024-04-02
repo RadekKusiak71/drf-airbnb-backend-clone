@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from .serializers import ReservationSerializer
 from .models import Reservation
 from rest_framework.authentication import TokenAuthentication
+from django.shortcuts import get_object_or_404
 
 
 class ReservationsViewSets(viewsets.ViewSet):
@@ -28,7 +29,7 @@ class ReservationsViewSets(viewsets.ViewSet):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def retrieve(self, request, pk=None):
-        reservation = Reservation.objects.get(id=pk)
+        reservation = Reservation.objects.get_object_or_404(id=pk)
         if reservation:
             serialized_data = ReservationSerializer(
                 reservation, many=False).data
@@ -45,7 +46,7 @@ class ReservationsViewSets(viewsets.ViewSet):
                 status=status.HTTP_401_UNAUTHORIZED,
             )
 
-        reservation = Reservation.objects.get(id=pk)
+        reservation = Reservation.objects.get_object_or_404(id=pk)
         data = request.data
         if reservation:
             serializer = ReservationSerializer(reservation, data=data)
@@ -62,7 +63,7 @@ class ReservationsViewSets(viewsets.ViewSet):
                 status=status.HTTP_401_UNAUTHORIZED,
             )
 
-        reservation = Reservation.objects.get(id=pk)
+        reservation = Reservation.objects.get_object_or_404(id=pk)
         data = request.data
         if reservation:
             serializer = ReservationSerializer(
@@ -80,7 +81,7 @@ class ReservationsViewSets(viewsets.ViewSet):
                 status=status.HTTP_401_UNAUTHORIZED,
             )
 
-        reservation = Reservation.objects.get(id=pk)
+        reservation = Reservation.objects.get_object_or_404(id=pk)
         if reservation:
             reservation.delete()
             return Response(
