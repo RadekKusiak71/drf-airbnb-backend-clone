@@ -22,9 +22,9 @@ class UsersModelViewSet(viewsets.ViewSet):
             return Response({"details": "Not found"}, status=status.HTTP_404_NOT_FOUND)
 
     def retrieve(self, request, pk=None):
-        queryset = Profile.objects.get(id=pk)
-        if queryset:
-            serialized_data = ProfileSerializer(queryset, many=False).data
+        profile = Profile.objects.get(id=pk)
+        if profile:
+            serialized_data = ProfileSerializer(profile, many=False).data
             return Response(serialized_data, status=status.HTTP_200_OK)
         else:
             return Response({"details": "Profile not found"}, status=status.HTTP_404_NOT_FOUND)
@@ -33,10 +33,10 @@ class UsersModelViewSet(viewsets.ViewSet):
         if not request.user.is_authenticated:
             return Response({"detail": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
 
-        queryset = Profile.objects.get(id=pk)
+        profile = Profile.objects.get(id=pk)
         data = request.data
-        if queryset:
-            serializer = ProfileUpdateSerializer(queryset, data=data)
+        if profile:
+            serializer = ProfileUpdateSerializer(profile, data=data)
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -47,11 +47,11 @@ class UsersModelViewSet(viewsets.ViewSet):
         if not request.user.is_authenticated:
             return Response({"detail": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
 
-        queryset = Profile.objects.get(id=pk)
+        profile = Profile.objects.get(id=pk)
         data = request.data
-        if queryset:
+        if profile:
             serializer = ProfileUpdateSerializer(
-                queryset, data=data, partial=True)
+                profile, data=data, partial=True)
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -62,9 +62,9 @@ class UsersModelViewSet(viewsets.ViewSet):
         if not request.user.is_authenticated:
             return Response({"detail": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
 
-        queryset = Profile.objects.get(id=pk)
-        if queryset:
-            queryset.delete()
+        profile = Profile.objects.get(id=pk)
+        if profile:
+            profile.delete()
             return Response({"details": "Profile deleted"}, status=status.HTTP_204_NO_CONTENT)
         else:
             return Response({"details": "Profile not found"}, status=status.HTTP_404_NOT_FOUND)

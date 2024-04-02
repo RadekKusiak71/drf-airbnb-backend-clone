@@ -29,9 +29,9 @@ class ListingViewSets(viewsets.ViewSet):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def retrieve(self, request, pk=None):
-        queryset = Listing.objects.get(id=pk)
-        if queryset:
-            serialized_data = ListingSerializer(queryset, many=False).data
+        listing = Listing.objects.get(id=pk)
+        if listing:
+            serialized_data = ListingSerializer(listing, many=False).data
             return Response(serialized_data, status=status.HTTP_200_OK)
         else:
             return Response({"details": "Listing not found"}, status=status.HTTP_404_NOT_FOUND)
@@ -40,10 +40,10 @@ class ListingViewSets(viewsets.ViewSet):
         if not request.user.is_authenticated:
             return Response({"detail": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
 
-        queryset = Listing.objects.get(id=pk)
+        listing = Listing.objects.get(id=pk)
         data = request.data
-        if queryset:
-            serializer = ListingSerializer(queryset, data=data)
+        if listing:
+            serializer = ListingSerializer(listing, data=data)
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -54,10 +54,10 @@ class ListingViewSets(viewsets.ViewSet):
         if not request.user.is_authenticated:
             return Response({"detail": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
 
-        queryset = Listing.objects.get(id=pk)
+        listing = Listing.objects.get(id=pk)
         data = request.data
-        if queryset:
-            serializer = ListingSerializer(queryset, data=data, partial=True)
+        if listing:
+            serializer = ListingSerializer(listing, data=data, partial=True)
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -68,9 +68,9 @@ class ListingViewSets(viewsets.ViewSet):
         if not request.user.is_authenticated:
             return Response({"detail": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
 
-        queryset = Listing.objects.get(id=pk)
-        if queryset:
-            queryset.delete()
+        listing = Listing.objects.get(id=pk)
+        if listing:
+            listing.delete()
             return Response({"details": "Listing deleted"}, status=status.HTTP_204_NO_CONTENT)
         else:
             return Response({"details": "Listing not found"}, status=status.HTTP_404_NOT_FOUND)

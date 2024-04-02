@@ -28,9 +28,9 @@ class ReviewViewSet(viewsets.ViewSet):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def retrieve(self, request, pk=None):
-        queryset = Review.objects.get(id=pk)
-        if queryset:
-            serialized_data = ReviewSerializer(queryset, many=False).data
+        review = Review.objects.get(id=pk)
+        if review:
+            serialized_data = ReviewSerializer(review, many=False).data
             return Response(serialized_data, status=status.HTTP_200_OK)
         else:
             return Response({"details": "Review not found"}, status=status.HTTP_404_NOT_FOUND)
@@ -39,10 +39,10 @@ class ReviewViewSet(viewsets.ViewSet):
         if not request.user.is_authenticated:
             return Response({"detail": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
 
-        queryset = Review.objects.get(id=pk)
+        review = Review.objects.get(id=pk)
         data = request.data
-        if queryset:
-            serializer = ReviewSerializer(queryset, data=data)
+        if review:
+            serializer = ReviewSerializer(review, data=data)
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -53,11 +53,11 @@ class ReviewViewSet(viewsets.ViewSet):
         if not request.user.is_authenticated:
             return Response({"detail": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
 
-        queryset = Review.objects.get(id=pk)
+        review = Review.objects.get(id=pk)
         data = request.data
-        if queryset:
+        if review:
             serializer = ReviewSerializer(
-                queryset, data=data, partial=True)
+                review, data=data, partial=True)
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -67,11 +67,11 @@ class ReviewViewSet(viewsets.ViewSet):
     def destroy(self, request, pk=None):
         if not request.user.is_authenticated:
             return Response({"detail": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
-        queryset = Review.objects.get(id=pk)
-        if request.user != queryset.profile.user:
+        review = Review.objects.get(id=pk)
+        if request.user != review.review.user:
             return Response({"detail": "This review doesn\'t belong to this user."}, status=status.HTTP_401_UNAUTHORIZED)
-        if queryset:
-            queryset.delete()
+        if review:
+            review.delete()
             return Response({"details": "Review deleted"}, status=status.HTTP_204_NO_CONTENT)
         else:
             return Response({"details": "Review not found"}, status=status.HTTP_404_NOT_FOUND)

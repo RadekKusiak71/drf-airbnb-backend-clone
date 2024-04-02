@@ -28,9 +28,10 @@ class ReservationsViewSets(viewsets.ViewSet):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def retrieve(self, request, pk=None):
-        queryset = Reservation.objects.get(id=pk)
-        if queryset:
-            serialized_data = ReservationSerializer(queryset, many=False).data
+        reservation = Reservation.objects.get(id=pk)
+        if reservation:
+            serialized_data = ReservationSerializer(
+                reservation, many=False).data
             return Response(serialized_data, status=status.HTTP_200_OK)
         else:
             return Response(
@@ -44,10 +45,10 @@ class ReservationsViewSets(viewsets.ViewSet):
                 status=status.HTTP_401_UNAUTHORIZED,
             )
 
-        queryset = Reservation.objects.get(id=pk)
+        reservation = Reservation.objects.get(id=pk)
         data = request.data
-        if queryset:
-            serializer = ReservationSerializer(queryset, data=data)
+        if reservation:
+            serializer = ReservationSerializer(reservation, data=data)
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -61,11 +62,11 @@ class ReservationsViewSets(viewsets.ViewSet):
                 status=status.HTTP_401_UNAUTHORIZED,
             )
 
-        queryset = Reservation.objects.get(id=pk)
+        reservation = Reservation.objects.get(id=pk)
         data = request.data
-        if queryset:
+        if reservation:
             serializer = ReservationSerializer(
-                queryset, data=data, partial=True)
+                reservation, data=data, partial=True)
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -79,9 +80,9 @@ class ReservationsViewSets(viewsets.ViewSet):
                 status=status.HTTP_401_UNAUTHORIZED,
             )
 
-        queryset = Reservation.objects.get(id=pk)
-        if queryset:
-            queryset.delete()
+        reservation = Reservation.objects.get(id=pk)
+        if reservation:
+            reservation.delete()
             return Response(
                 {"details": "Reservation deleted"}, status=status.HTTP_204_NO_CONTENT
             )
