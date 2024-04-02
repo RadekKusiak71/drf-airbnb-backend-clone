@@ -29,50 +29,41 @@ class ReviewViewSet(viewsets.ViewSet):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def retrieve(self, request, pk=None):
-        review = Review.objects.get_object_or_404(id=pk)
-        if review:
-            serialized_data = ReviewSerializer(review, many=False).data
-            return Response(serialized_data, status=status.HTTP_200_OK)
-        else:
-            return Response({"details": "Review not found"}, status=status.HTTP_404_NOT_FOUND)
+        review = get_object_or_404(Review, id=pk)
+        serialized_data = ReviewSerializer(review, many=False).data
+        return Response(serialized_data, status=status.HTTP_200_OK)
 
     def update(self, request, pk=None):
         if not request.user.is_authenticated:
             return Response({"detail": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
 
-        review = Review.objects.get_object_or_404(id=pk)
+        review = get_object_or_404(Review, id=pk)
         data = request.data
-        if review:
-            serializer = ReviewSerializer(review, data=data)
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            return Response({"details": "Reservation not found"})
+        serializer = ReviewSerializer(review, data=data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def partial_update(self, request, pk=None):
         if not request.user.is_authenticated:
             return Response({"detail": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
 
-        review = Review.objects.get_object_or_404(id=pk)
+        review = get_object_or_404(Review, id=pk)
         data = request.data
-        if review:
-            serializer = ReviewSerializer(
-                review, data=data, partial=True)
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            return Response({"details": "Reservation not found"})
+
+        serializer = ReviewSerializer(
+            review, data=data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def destroy(self, request, pk=None):
         if not request.user.is_authenticated:
             return Response({"detail": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
-        review = Review.objects.get_object_or_404(id=pk)
+
+        review = get_object_or_404(Review, id=pk)
         if request.user != review.review.user:
             return Response({"detail": "This review doesn\'t belong to this user."}, status=status.HTTP_401_UNAUTHORIZED)
-        if review:
-            review.delete()
-            return Response({"details": "Review deleted"}, status=status.HTTP_204_NO_CONTENT)
-        else:
-            return Response({"details": "Review not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        review.delete()
+        return Response({"details": "Review deleted"}, status=status.HTTP_204_NO_CONTENT)

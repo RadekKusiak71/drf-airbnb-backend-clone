@@ -23,18 +23,15 @@ class UsersModelViewSet(viewsets.ViewSet):
             return Response({"details": "Not found"}, status=status.HTTP_404_NOT_FOUND)
 
     def retrieve(self, request, pk=None):
-        profile = Profile.objects.get_object_or_404(id=pk)
-        if profile:
-            serialized_data = ProfileSerializer(profile, many=False).data
-            return Response(serialized_data, status=status.HTTP_200_OK)
-        else:
-            return Response({"details": "Profile not found"}, status=status.HTTP_404_NOT_FOUND)
+        profile = get_object_or_404(Profile, id=pk)
+        serialized_data = ProfileSerializer(profile, many=False).data
+        return Response(serialized_data, status=status.HTTP_200_OK)
 
     def update(self, request, pk=None):
         if not request.user.is_authenticated:
             return Response({"detail": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
 
-        profile = Profile.objects.get_object_or_404(id=pk)
+        profile = get_object_or_404(Profile, id=pk)
         data = request.data
         if profile:
             serializer = ProfileUpdateSerializer(profile, data=data)
@@ -48,24 +45,18 @@ class UsersModelViewSet(viewsets.ViewSet):
         if not request.user.is_authenticated:
             return Response({"detail": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
 
-        profile = Profile.objects.get_object_or_404(id=pk)
+        profile = get_object_or_404(Profile, id=pk)
         data = request.data
-        if profile:
-            serializer = ProfileUpdateSerializer(
-                profile, data=data, partial=True)
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            return Response({"details": "Profile not found"}, status=status.HTTP_404_NOT_FOUND)
+        serializer = ProfileUpdateSerializer(
+            profile, data=data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def destroy(self, request, pk=None):
         if not request.user.is_authenticated:
             return Response({"detail": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
 
-        profile = Profile.objects.get_object_or_404(id=pk)
-        if profile:
-            profile.delete()
-            return Response({"details": "Profile deleted"}, status=status.HTTP_204_NO_CONTENT)
-        else:
-            return Response({"details": "Profile not found"}, status=status.HTTP_404_NOT_FOUND)
+        profile = get_object_or_404(Profile, id=pk)
+        profile.delete()
+        return Response({"details": "Profile deleted"}, status=status.HTTP_204_NO_CONTENT)

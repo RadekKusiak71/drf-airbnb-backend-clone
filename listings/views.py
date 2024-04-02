@@ -30,48 +30,38 @@ class ListingViewSets(viewsets.ViewSet):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def retrieve(self, request, pk=None):
-        listing = Listing.objects.get_object_or_404(id=pk)
-        if listing:
-            serialized_data = ListingSerializer(listing, many=False).data
-            return Response(serialized_data, status=status.HTTP_200_OK)
-        else:
-            return Response({"details": "Listing not found"}, status=status.HTTP_404_NOT_FOUND)
+        listing = get_object_or_404(Listing, id=pk)
+        serialized_data = ListingSerializer(listing, many=False).data
+        return Response(serialized_data, status=status.HTTP_200_OK)
 
     def update(self, request, pk=None):
         if not request.user.is_authenticated:
             return Response({"detail": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
 
-        listing = Listing.objects.get_object_or_404(id=pk)
+        listing = get_object_or_404(Listing, id=pk)
         data = request.data
-        if listing:
-            serializer = ListingSerializer(listing, data=data)
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            return Response({"details": "Listing not found"})
+        serializer = ListingSerializer(listing, data=data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def partial_update(self, request, pk=None):
         if not request.user.is_authenticated:
             return Response({"detail": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
 
-        listing = Listing.objects.get_object_or_404(id=pk)
+        listing = get_object_or_404(Listing, id=pk)
         data = request.data
-        if listing:
-            serializer = ListingSerializer(listing, data=data, partial=True)
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            return Response({"details": "Listing not found"})
+
+        serializer = ListingSerializer(listing, data=data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def destroy(self, request, pk=None):
         if not request.user.is_authenticated:
             return Response({"detail": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
 
-        listing = Listing.objects.get_object_or_404(id=pk)
-        if listing:
-            listing.delete()
-            return Response({"details": "Listing deleted"}, status=status.HTTP_204_NO_CONTENT)
-        else:
-            return Response({"details": "Listing not found"}, status=status.HTTP_404_NOT_FOUND)
+        listing = get_object_or_404(Listing, id=pk)
+
+        listing.delete()
+        return Response({"details": "Listing deleted"}, status=status.HTTP_204_NO_CONTENT)
